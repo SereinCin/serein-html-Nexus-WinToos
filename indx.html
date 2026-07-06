@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus WinTool - All-in-One System Utility</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f5d76e;
+            --gold-dark: #b8941f;
+            --dark-bg: #0a0a0a;
+            --dark-card: #121212;
+            --dark-border: #1f1f1f;
+            --dark-hover: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f5d76e 50%, #d4af37 100%);
+            --gradient-dark: linear-gradient(180deg, #0a0a0a 0%, #121212 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 粒子背景 */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 语言切换 */
+        .lang-switch {
+            display: flex;
+            align-items: center;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 4px;
+            margin-left: 1rem;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--gradient-gold);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .lang-btn:hover:not(.active) {
+            color: var(--gold);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.75rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #000;
+            font-size: 0.9rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gradient-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            padding: 0.6rem 1.5rem;
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Hero 区域 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 .line1 {
+            color: var(--text-primary);
+        }
+
+        .hero h1 .line2 {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        /* 统计数据 */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .like-btn {
+            position: absolute;
+            top: -5px;
+            right: -25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .like-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .like-btn:active {
+            transform: scale(0.9);
+        }
+
+        .like-btn.liked {
+            opacity: 1;
+        }
+
+        @keyframes likePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        .like-pop {
+            animation: likePop 0.3s ease;
+        }
+
+        /* 通用板块样式 */
+        .section {
+            padding: 6rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* 功能卡片 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-gold);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* 平台支持 */
+        .platforms-section {
+            background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.03) 50%, transparent 100%);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .platform-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.1);
+        }
+
+        .platform-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .platform-versions {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 便携性展示 */
+        .portable-section {
+            overflow: hidden;
+        }
+
+        .portable-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .portable-text h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .portable-text p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .portable-features {
+            list-style: none;
+        }
+
+        .portable-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .portable-features li:last-child {
+            border-bottom: none;
+        }
+
+        .portable-features .check-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .portable-features strong {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .portable-features p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+
+        .portable-visual {
+            position: relative;
+            height: 400px;
+        }
+
+        .floating-device {
+            position: absolute;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: float 6s ease-in-out infinite;
+            min-width: 140px;
+        }
+
+        .floating-device:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-device:nth-child(2) {
+            top: 40%;
+            right: 10%;
+            animation-delay: -2s;
+        }
+
+        .floating-device:nth-child(3) {
+            bottom: 10%;
+            left: 30%;
+            animation-delay: -4s;
+        }
+
+        .device-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .device-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* 功能详情 - 版本分级 */
+        .editions-section {
+            background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.02) 50%, transparent 100%);
+        }
+
+        .editions-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .edition-tab {
+            padding: 0.75rem 2rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 50px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .edition-tab:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .edition-tab.active {
+            background: var(--gradient-gold);
+            border-color: transparent;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .edition-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .edition-content.active {
+            display: block;
+        }
+
+        .edition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .edition-item {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .edition-item:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .edition-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .edition-item p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .edition-metric {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 下载区域 */
+        .download-section {
+            text-align: center;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .download-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .download-card:hover {
+            transform: translateY(-6px);
+            border-color: transparent;
+        }
+
+        .download-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .download-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-platform {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .download-version {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .download-size {
+            color: var(--gold);
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .channels {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .channel-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .channel-link:hover {
+            color: var(--gold);
+        }
+
+        .channel-link .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 公告区域 */
+        .notice-box {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(212, 175, 55, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 16px;
+            text-align: left;
+        }
+
+        .notice-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .notice-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .notice-content ul {
+            margin-top: 0.75rem;
+            padding-left: 1.5rem;
+        }
+
+        .notice-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .notice-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .notice-content a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .notice-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--dark-card);
+            border-top: 1px solid var(--dark-border);
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            background: var(--dark-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .social-link:hover {
+            background: var(--gradient-gold);
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid var(--dark-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .footer-bottom a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* 弹窗 - 版本选择 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: var(--dark-border);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--dark-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .edition-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .edition-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edition-option:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: var(--dark-hover);
+        }
+
+        .edition-option-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .edition-option-info p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .edition-option-badge {
+            padding: 0.3rem 0.75rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--dark-border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .modal-footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 滚动动画 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .portable-content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                gap: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 4rem 1.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-right {
+                gap: 0.75rem;
+            }
+
+            .lang-switch {
+                margin-left: 0;
+            }
+
+            .nav-cta {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子背景 -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-mark">N</div>
+                <span class="logo-text">Nexus WinTool</span>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                    <li><a href="#platforms" data-i18n="nav_platforms">Platforms</a></li>
+                    <li><a href="#portable" data-i18n="nav_portable">Portable</a></li>
+                    <li><a href="#editions" data-i18n="nav_editions">Editions</a></li>
+                    <li><a href="#download" data-i18n="nav_download">Download</a></li>
+                </ul>
+                <div class="lang-switch">
+                    <button class="lang-btn active" onclick="switchLang('en')">EN</button>
+                    <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+                </div>
+                <a href="#download" class="nav-cta" data-i18n="nav_cta">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                <span data-i18n="hero_badge">v2.0 Now Available</span>
+            </div>
+            <h1>
+                <span class="line1" data-i18n="hero_title1">All-in-One System Utility</span><br>
+                <span class="line2" data-i18n="hero_title2">Power Meets Simplicity</span>
+            </h1>
+            <p data-i18n="hero_desc">Integrating the world's top system tools into one powerful suite. Hardware detection, system optimization, cross-platform support — all in your pocket.</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn-primary">
+                    <span>↓</span>
+                    <span data-i18n="hero_btn1">Download Now</span>
+                </a>
+                <a href="#features" class="btn-secondary">
+                    <span>→</span>
+                    <span data-i18n="hero_btn2">Learn More</span>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="8000" data-suffix="+">0</div>
+                    <div class="stat-label" data-i18n="stat_core">Core Features</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="4">0</div>
+                    <div class="stat-label" data-i18n="stat_platform">Platforms</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="100" data-suffix="%">0</div>
+                    <div class="stat-label" data-i18n="stat_portable">Portable</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="users-count" data-target="50000" data-suffix="+">0</div>
+                    <div class="stat-label" data-i18n="stat_users">Users Trust</div>
+                    <button class="like-btn" id="like-btn" onclick="addLike()">👍</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section class="section" id="features">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag" data-i18n="feat_tag">Core Features</span>
+                <h2 class="section-title" data-i18n="feat_title">Why Choose Nexus WinTool</h2>
+                <p class="section-desc" data-i18n="feat_desc">The essential toolkit for every computer user — professional-grade capabilities with an intuitive interface.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">◈</div>
+                    <h3 data-i18n="feat1_title">Cross-Platform Compatibility</h3>
+                    <p data-i18n="feat1_desc">Full support for Windows, macOS, and Linux operating systems. One toolset, seamless experience across all platforms.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">◇</div>
+                    <h3 data-i18n="feat2_title">Ultimate Portability</h3>
+                    <p data-i18n="feat2_desc">No installation required. Carry it on USB drives, memory cards, or even boot into PE environments — ready whenever you need it.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">◎</div>
+                    <h3 data-i18n="feat3_title">Deep Hardware Detection</h3>
+                    <p data-i18n="feat3_desc">Comprehensive hardware analysis with professional-grade precision. CPU, GPU, memory, storage — all details at your fingertips.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">△</div>
+                    <h3 data-i18n="feat4_title">Advanced System Optimization</h3>
+                    <p data-i18n="feat4_desc">Intelligent cleanup, startup management, and memory optimization. Revitalize your system with measurable performance gains.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 平台支持 -->
+    <section class="section platforms-section" id="platforms">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag" data-i18n="plat_tag">Platform Support</span>
+                <h2 class="section-title" data-i18n="plat_title">All Major Platforms Covered</h2>
+                <p class="section-desc" data-i18n="plat_desc">Built once, runs everywhere. Nexus WinTool adapts perfectly to your operating system of choice.</p>
+            </div>
+            <div class="platforms-grid">
+                <div class="platform-card reveal">
+                    <div class="platform-name">Windows</div>
+                    <p class="platform-versions">Windows 10 / 11 / Server</p>
+                    <span class="platform-badge" data-i18n="plat_supported">Fully Supported</span>
+                </div>
+                <div class="platform-card reveal">
+                    <div class="platform-name">macOS</div>
+                    <p class="platform-versions">macOS 12+ (Intel / Apple Silicon)</p>
+                    <span class="platform-badge" data-i18n="plat_supported">Fully Supported</span>
+                </div>
+                <div class="platform-card reveal">
+                    <div class="platform-name">Linux</div>
+                    <p class="platform-versions">Red Hat / Ubuntu / CentOS & more</p>
+                    <span class="platform-badge" data-i18n="plat_supported">Fully Supported</span>
+                </div>
+                <div class="platform-card reveal">
+                    <div class="platform-name">WinPE</div>
+                    <p class="platform-versions">Bootable maintenance environment</p>
+                    <span class="platform-badge" data-i18n="plat_available">Available</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 便携性展示 -->
+    <section class="section portable-section" id="portable">
+        <div class="section-container">
+            <div class="portable-content">
+                <div class="portable-text reveal">
+                    <span class="section-tag" data-i18n="port_tag">Portability</span>
+                    <h2 data-i18n="port_title">Take It Anywhere</h2>
+                    <p data-i18n="port_desc">Nexus WinTool is designed for maximum portability. No installation, no registry modifications, no traces left behind. Put it on any storage device and use it anywhere, anytime.</p>
+                    <ul class="portable-features">
+                        <li>
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <strong data-i18n="port1_title">PE Environment Ready</strong>
+                                <p data-i18n="port1_desc">Integrate into WinPE as your go-to system maintenance toolkit</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <strong data-i18n="port2_title">USB / TF Card Ready</strong>
+                                <p data-i18n="port2_desc">Compact size fits easily on any portable storage device</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <strong data-i18n="port3_title">Zero Installation</strong>
+                                <p data-i18n="port3_desc">Extract and run. No system changes, no leftover files</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="portable-visual reveal">
+                    <div class="floating-device">
+                        <div class="device-icon">💾</div>
+                        <div class="device-name" data-i18n="dev1_name">USB Boot</div>
+                        <div class="device-desc" data-i18n="dev1_desc">On-the-go maintenance</div>
+                    </div>
+                    <div class="floating-device">
+                        <div class="device-icon">📟</div>
+                        <div class="device-name" data-i18n="dev2_name">PE System</div>
+                        <div class="device-desc" data-i18n="dev2_desc">Emergency recovery</div>
+                    </div>
+                    <div class="floating-device">
+                        <div class="device-icon">💿</div>
+                        <div class="device-name" data-i18n="dev3_name">TF Card</div>
+                        <div class="device-desc" data-i18n="dev3_desc">Ultra-portable</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 版本分级 -->
+    <section class="section editions-section" id="editions">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag" data-i18n="edit_tag">Editions</span>
+                <h2 class="section-title" data-i18n="edit_title">Choose Your Edition</h2>
+                <p class="section-desc" data-i18n="edit_desc">From everyday use to professional-grade system administration — there's an edition for every need.</p>
+            </div>
+            <div class="editions-tabs reveal">
+                <button class="edition-tab active" data-tab="standard" data-i18n="edit_tab1">Standard</button>
+                <button class="edition-tab" data-tab="professional" data-i18n="edit_tab2">Professional</button>
+                <button class="edition-tab" data-tab="custom" data-i18n="edit_tab3">Custom</button>
+            </div>
+
+            <div class="edition-content active" id="standard">
+                <div class="edition-grid">
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">50+</div>
+                        <h4 data-i18n="std1_title">Essential Tools</h4>
+                        <p data-i18n="std1_desc">All the tools you need for daily system maintenance</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">Basic</div>
+                        <h4 data-i18n="std2_title">Hardware Detection</h4>
+                        <p data-i18n="std2_desc">Core hardware information and specifications</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">1-Click</div>
+                        <h4 data-i18n="std3_title">System Cleanup</h4>
+                        <p data-i18n="std3_desc">Simple one-click optimization and cleanup</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">Free</div>
+                        <h4 data-i18n="std4_title">Forever Free</h4>
+                        <p data-i18n="std4_desc">All essential features at no cost</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edition-content" id="professional">
+                <div class="edition-grid">
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">8000+</div>
+                        <h4 data-i18n="pro1_title">Professional Features</h4>
+                        <p data-i18n="pro1_desc">Comprehensive toolkit for power users and IT professionals</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">Deep</div>
+                        <h4 data-i18n="pro2_title">Hardware Analysis</h4>
+                        <p data-i18n="pro2_desc">In-depth diagnostics with sensor data and benchmarks</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">Advanced</div>
+                        <h4 data-i18n="pro3_title">System Tuning</h4>
+                        <p data-i18n="pro3_desc">Fine-grained optimization with detailed reports</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">Pro</div>
+                        <h4 data-i18n="pro4_title">Technical Support</h4>
+                        <p data-i18n="pro4_desc">Priority support and regular feature updates</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edition-content" id="custom">
+                <div class="edition-grid">
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">50000+</div>
+                        <h4 data-i18n="cus1_title">Custom Modules</h4>
+                        <p data-i18n="cus1_desc">Tailor-made tools and features for your specific needs</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">White</div>
+                        <h4 data-i18n="cus2_title">White Label</h4>
+                        <p data-i18n="cus2_desc">Custom branding and interface for enterprises</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">API</div>
+                        <h4 data-i18n="cus3_title">API Access</h4>
+                        <p data-i18n="cus3_desc">Full API integration for automated workflows</p>
+                    </div>
+                    <div class="edition-item reveal">
+                        <div class="edition-metric">24/7</div>
+                        <h4 data-i18n="cus4_title">Dedicated Support</h4>
+                        <p data-i18n="cus4_desc">Round-the-clock premium support service</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载区域 -->
+    <section class="section download-section" id="download">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <span class="section-tag" data-i18n="dl_tag">Download</span>
+                <h2 class="section-title" data-i18n="dl_title">Get Started Today</h2>
+                <p class="section-desc" data-i18n="dl_desc">Select your platform and experience the power of Nexus WinTool.</p>
+            </div>
+            <div class="download-grid">
+                <div class="download-card reveal">
+                    <div class="download-platform">Windows</div>
+                    <p class="download-version">v2.0.0 · 64-bit</p>
+                    <p class="download-size">45.2 MB</p>
+                    <button class="download-btn" onclick="openDownloadModal('Windows')" data-i18n="dl_btn">Download</button>
+                </div>
+                <div class="download-card reveal">
+                    <div class="download-platform">macOS</div>
+                    <p class="download-version">v2.0.0 · Universal</p>
+                    <p class="download-size">52.8 MB</p>
+                    <button class="download-btn" onclick="openDownloadModal('macOS')" data-i18n="dl_btn">Download</button>
+                </div>
+                <div class="download-card reveal">
+                    <div class="download-platform">Linux</div>
+                    <p class="download-version">v2.0.0 · x86_64</p>
+                    <p class="download-size">38.6 MB</p>
+                    <button class="download-btn" onclick="openDownloadModal('Linux')" data-i18n="dl_btn">Download</button>
+                </div>
+                <div class="download-card reveal">
+                    <div class="download-platform">WinPE</div>
+                    <p class="download-version">v2.0.0 · ISO Image</p>
+                    <p class="download-size">128 MB</p>
+                    <button class="download-btn" onclick="openDownloadModal('WinPE')" data-i18n="dl_btn">Download</button>
+                </div>
+            </div>
+
+            <div class="channels reveal">
+                <a href="https://serein.ren" target="_blank" class="channel-link">
+                    <span class="icon">◉</span>
+                    <span data-i18n="ch_official">Official Site: serein.ren</span>
+                </a>
+                <a href="https://github.com/SereinCin/serein-Nexus-WinTool" target="_blank" class="channel-link">
+                    <span class="icon">◇</span>
+                    <span data-i18n="ch_github">GitHub Repository</span>
+                </a>
+                <a href="https://github.com/SereinCin/serein-Nexus-WinTool/releases" target="_blank" class="channel-link">
+                    <span class="icon">◎</span>
+                    <span data-i18n="ch_announce">Latest Releases</span>
+                </a>
+            </div>
+
+            <div class="notice-box reveal">
+                <div class="notice-title">
+                    <span>⚠</span>
+                    <span data-i18n="notice_title">Important Notes</span>
+                </div>
+                <div class="notice-content">
+                    <ul>
+                        <li><strong data-i18n="notice1_title">Official Website:</strong> <span data-i18n="notice1_desc">serein.ren supports user registration and login. Connectivity may vary by region.</span></li>
+                        <li><strong data-i18n="notice2_title">International Version:</strong> <span data-i18n="notice2_desc">The international version is under development and not yet officially launched. Stay tuned!</span></li>
+                        <li><strong data-i18n="notice3_title">Latest Updates:</strong> <span data-i18n="notice3_desc">Follow the GitHub repository for version updates and release announcements.</span></li>
+                        <li><strong data-i18n="notice4_title">Network Issues:</strong> <span data-i18n="notice4_desc">If you experience slow or intermittent access, please retry later or check GitHub for the latest version.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-mark">N</div>
+                        <span class="logo-text">Nexus WinTool</span>
+                    </div>
+                    <p data-i18n="footer_desc">The all-in-one system optimization and hardware detection utility. Bringing together the world's best tools into one powerful suite.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/SereinCin/serein-Nexus-WinTool" class="social-link" title="GitHub">◇</a>
+                        <a href="https://serein.ren" class="social-link" title="Website">◉</a>
+                        <a href="#" class="social-link" title="Email">✉</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer_product">Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features" data-i18n="fp_features">Features</a></li>
+                        <li><a href="#platforms" data-i18n="fp_platforms">Platforms</a></li>
+                        <li><a href="#download" data-i18n="fp_download">Download</a></li>
+                        <li><a href="#" data-i18n="fp_changelog">Changelog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer_resources">Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" data-i18n="fr_docs">Documentation</a></li>
+                        <li><a href="#" data-i18n="fr_faq">FAQ</a></li>
+                        <li><a href="#" data-i18n="fr_community">Community</a></li>
+                        <li><a href="#" data-i18n="fr_feedback">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer_about">About</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" data-i18n="fa_about">About Us</a></li>
+                        <li><a href="#" data-i18n="fa_privacy">Privacy Policy</a></li>
+                        <li><a href="#" data-i18n="fa_terms">Terms of Service</a></li>
+                        <li><a href="#" data-i18n="fa_contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Nexus WinTool. All rights reserved.</p>
+                <p>Powered by <a href="https://serein.ren">Serein</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 下载版本选择弹窗 -->
+    <div class="modal-overlay" id="download-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeDownloadModal()">×</button>
+            <h3 class="modal-title" id="modal-title" data-i18n="modal_title">Select Edition</h3>
+            <p class="modal-subtitle" id="modal-subtitle" data-i18n="modal_subtitle">Choose the edition that's right for you</p>
+            <div class="edition-options">
+                <div class="edition-option" onclick="goToGitHub('standard')">
+                    <div class="edition-option-info">
+                        <h4 data-i18n="modal_std">Standard Edition</h4>
+                        <p data-i18n="modal_std_desc">Essential tools for everyday use — free forever</p>
+                    </div>
+                    <span class="edition-option-badge" data-i18n="modal_free">Free</span>
+                </div>
+                <div class="edition-option" onclick="goToGitHub('professional')">
+                    <div class="edition-option-info">
+                        <h4 data-i18n="modal_pro">Professional Edition</h4>
+                        <p data-i18n="modal_pro_desc">8000+ features for power users and IT pros</p>
+                    </div>
+                    <span class="edition-option-badge">Pro</span>
+                </div>
+                <div class="edition-option" onclick="goToGitHub('custom')">
+                    <div class="edition-option-info">
+                        <h4 data-i18n="modal_cus">Custom Edition</h4>
+                        <p data-i18n="modal_cus_desc">50000+ custom modules for enterprise needs</p>
+                    </div>
+                    <span class="edition-option-badge">Enterprise</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span data-i18n="modal_footer">You will be redirected to the </span>
+                <a href="https://github.com/SereinCin/serein-Nexus-WinTool" target="_blank">GitHub repository</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 多语言支持 ==========
+        const translations = {
+            en: {
+                nav_features: 'Features',
+                nav_platforms: 'Platforms',
+                nav_portable: 'Portable',
+                nav_editions: 'Editions',
+                nav_download: 'Download',
+                nav_cta: 'Download',
+                hero_badge: 'v2.0 Now Available',
+                hero_title1: 'All-in-One System Utility',
+                hero_title2: 'Power Meets Simplicity',
+                hero_desc: "Integrating the world's top system tools into one powerful suite. Hardware detection, system optimization, cross-platform support — all in your pocket.",
+                hero_btn1: 'Download Now',
+                hero_btn2: 'Learn More',
+                stat_core: 'Core Features',
+                stat_platform: 'Platforms',
+                stat_portable: 'Portable',
+                stat_users: 'Users Trust',
+                feat_tag: 'Core Features',
+                feat_title: 'Why Choose Nexus WinTool',
+                feat_desc: 'The essential toolkit for every computer user — professional-grade capabilities with an intuitive interface.',
+                feat1_title: 'Cross-Platform Compatibility',
+                feat1_desc: 'Full support for Windows, macOS, and Linux operating systems. One toolset, seamless experience across all platforms.',
+                feat2_title: 'Ultimate Portability',
+                feat2_desc: 'No installation required. Carry it on USB drives, memory cards, or even boot into PE environments — ready whenever you need it.',
+                feat3_title: 'Deep Hardware Detection',
+                feat3_desc: 'Comprehensive hardware analysis with professional-grade precision. CPU, GPU, memory, storage — all details at your fingertips.',
+                feat4_title: 'Advanced System Optimization',
+                feat4_desc: 'Intelligent cleanup, startup management, and memory optimization. Revitalize your system with measurable performance gains.',
+                plat_tag: 'Platform Support',
+                plat_title: 'All Major Platforms Covered',
+                plat_desc: 'Built once, runs everywhere. Nexus WinTool adapts perfectly to your operating system of choice.',
+                plat_supported: 'Fully Supported',
+                plat_available: 'Available',
+                port_tag: 'Portability',
+                port_title: 'Take It Anywhere',
+                port_desc: 'Nexus WinTool is designed for maximum portability. No installation, no registry modifications, no traces left behind. Put it on any storage device and use it anywhere, anytime.',
+                port1_title: 'PE Environment Ready',
+                port1_desc: 'Integrate into WinPE as your go-to system maintenance toolkit',
+                port2_title: 'USB / TF Card Ready',
+                port2_desc: 'Compact size fits easily on any portable storage device',
+                port3_title: 'Zero Installation',
+                port3_desc: 'Extract and run. No system changes, no leftover files',
+                dev1_name: 'USB Boot',
+                dev1_desc: 'On-the-go maintenance',
+                dev2_name: 'PE System',
+                dev2_desc: 'Emergency recovery',
+                dev3_name: 'TF Card',
+                dev3_desc: 'Ultra-portable',
+                edit_tag: 'Editions',
+                edit_title: 'Choose Your Edition',
+                edit_desc: "From everyday use to professional-grade system administration — there's an edition for every need.",
+                edit_tab1: 'Standard',
+                edit_tab2: 'Professional',
+                edit_tab3: 'Custom',
+                std1_title: 'Essential Tools',
+                std1_desc: 'All the tools you need for daily system maintenance',
+                std2_title: 'Hardware Detection',
+                std2_desc: 'Core hardware information and specifications',
+                std3_title: 'System Cleanup',
+                std3_desc: 'Simple one-click optimization and cleanup',
+                std4_title: 'Forever Free',
+                std4_desc: 'All essential features at no cost',
+                pro1_title: 'Professional Features',
+                pro1_desc: 'Comprehensive toolkit for power users and IT professionals',
+                pro2_title: 'Hardware Analysis',
+                pro2_desc: 'In-depth diagnostics with sensor data and benchmarks',
+                pro3_title: 'System Tuning',
+                pro3_desc: 'Fine-grained optimization with detailed reports',
+                pro4_title: 'Technical Support',
+                pro4_desc: 'Priority support and regular feature updates',
+                cus1_title: 'Custom Modules',
+                cus1_desc: 'Tailor-made tools and features for your specific needs',
+                cus2_title: 'White Label',
+                cus2_desc: 'Custom branding and interface for enterprises',
+                cus3_title: 'API Access',
+                cus3_desc: 'Full API integration for automated workflows',
+                cus4_title: 'Dedicated Support',
+                cus4_desc: 'Round-the-clock premium support service',
+                dl_tag: 'Download',
+                dl_title: 'Get Started Today',
+                dl_desc: 'Select your platform and experience the power of Nexus WinTool.',
+                dl_btn: 'Download',
+                ch_official: 'Official Site: serein.ren',
+                ch_github: 'GitHub Repository',
+                ch_announce: 'Latest Releases',
+                notice_title: 'Important Notes',
+                notice1_title: 'Official Website:',
+                notice1_desc: 'serein.ren supports user registration and login. Connectivity may vary by region.',
+                notice2_title: 'International Version:',
+                notice2_desc: 'The international version is under development and not yet officially launched. Stay tuned!',
+                notice3_title: 'Latest Updates:',
+                notice3_desc: 'Follow the GitHub repository for version updates and release announcements.',
+                notice4_title: 'Network Issues:',
+                notice4_desc: 'If you experience slow or intermittent access, please retry later or check GitHub for the latest version.',
+                footer_desc: "The all-in-one system optimization and hardware detection utility. Bringing together the world's best tools into one powerful suite.",
+                footer_product: 'Product',
+                fp_features: 'Features',
+                fp_platforms: 'Platforms',
+                fp_download: 'Download',
+                fp_changelog: 'Changelog',
+                footer_resources: 'Resources',
+                fr_docs: 'Documentation',
+                fr_faq: 'FAQ',
+                fr_community: 'Community',
+                fr_feedback: 'Feedback',
+                footer_about: 'About',
+                fa_about: 'About Us',
+                fa_privacy: 'Privacy Policy',
+                fa_terms: 'Terms of Service',
+                fa_contact: 'Contact',
+                modal_title: 'Select Edition',
+                modal_subtitle: "Choose the edition that's right for you",
+                modal_std: 'Standard Edition',
+                modal_std_desc: 'Essential tools for everyday use — free forever',
+                modal_pro: 'Professional Edition',
+                modal_pro_desc: '8000+ features for power users and IT pros',
+                modal_cus: 'Custom Edition',
+                modal_cus_desc: '50000+ custom modules for enterprise needs',
+                modal_free: 'Free',
+                modal_footer: 'You will be redirected to the '
+            },
+            zh: {
+                nav_features: '功能特性',
+                nav_platforms: '平台支持',
+                nav_portable: '便携性',
+                nav_editions: '版本分级',
+                nav_download: '下载',
+                nav_cta: '立即下载',
+                hero_badge: 'v2.0 版本已发布',
+                hero_title1: '全能系统工具集',
+                hero_title2: '强大 源于简洁',
+                hero_desc: '融合全球顶级系统工具的强大功能，硬件检测、系统优化、跨平台支持——全部装进口袋。',
+                hero_btn1: '立即下载',
+                hero_btn2: '了解更多',
+                stat_core: '核心功能',
+                stat_platform: '支持平台',
+                stat_portable: '便携无安装',
+                stat_users: '用户信赖',
+                feat_tag: '核心功能',
+                feat_title: '为什么选择 Nexus WinTool',
+                feat_desc: '每位电脑用户的必备工具集——专业级功能，直观易用的界面。',
+                feat1_title: '全平台兼容',
+                feat1_desc: '完美支持 Windows、macOS、Linux 三大操作系统。一套工具，跨平台无缝切换。',
+                feat2_title: '极致便携',
+                feat2_desc: '无需安装，即插即用。可装入 U 盘、TF 卡，甚至 PE 系统中随身携带。',
+                feat3_title: '深度硬件检测',
+                feat3_desc: '专业级精度的全面硬件分析。CPU、显卡、内存、存储——所有信息一目了然。',
+                feat4_title: '高级系统优化',
+                feat4_desc: '智能清理、启动项管理、内存优化。让系统焕发新生，性能提升看得见。',
+                plat_tag: '平台支持',
+                plat_title: '主流平台 全面覆盖',
+                plat_desc: '一次开发，处处运行。Nexus WinTool 完美适配你选择的任何操作系统。',
+                plat_supported: '完全支持',
+                plat_available: '已支持',
+                port_tag: '便携性',
+                port_title: '随身携带 即插即用',
+                port_desc: 'Nexus WinTool 专为极致便携设计。无需安装、不修改注册表、不留任何痕迹。装入任何存储设备，随时随地使用。',
+                port1_title: 'PE 系统支持',
+                port1_desc: '可集成到 WinPE 中，作为系统维护利器',
+                port2_title: 'U盘 / TF 卡便携',
+                port2_desc: '体积小巧，轻松装入任何便携存储设备',
+                port3_title: '零安装',
+                port3_desc: '解压即用，不修改系统，卸载无残留',
+                dev1_name: 'U盘启动',
+                dev1_desc: '随身系统维护',
+                dev2_name: 'PE 系统',
+                dev2_desc: '应急修复工具',
+                dev3_name: 'TF 卡',
+                dev3_desc: '极致便携',
+                edit_tag: '版本分级',
+                edit_title: '选择适合你的版本',
+                edit_desc: '从日常使用到专业级系统管理——总有一个版本适合你。',
+                edit_tab1: '普通版',
+                edit_tab2: '专业版',
+                edit_tab3: '定制版',
+                std1_title: '基础工具',
+                std1_desc: '日常系统维护所需的全部工具',
+                std2_title: '硬件检测',
+                std2_desc: '核心硬件信息与规格参数',
+                std3_title: '系统清理',
+                std3_desc: '简单一键优化与清理',
+                std4_title: '永久免费',
+                std4_desc: '所有基础功能完全免费',
+                pro1_title: '专业功能',
+                pro1_desc: '面向高级用户和 IT 专业人士的全面工具集',
+                pro2_title: '硬件分析',
+                pro2_desc: '深度诊断，包含传感器数据和性能跑分',
+                pro3_title: '系统调优',
+                pro3_desc: '精细化优化，附带详细报告',
+                pro4_title: '技术支持',
+                pro4_desc: '优先支持和定期功能更新',
+                cus1_title: '定制模块',
+                cus1_desc: '根据您的特定需求量身定制工具和功能',
+                cus2_title: '白标定制',
+                cus2_desc: '为企业提供自定义品牌和界面',
+                cus3_title: 'API 接入',
+                cus3_desc: '完整 API 集成，支持自动化工作流',
+                cus4_title: '专属支持',
+                cus4_desc: '全天候高级支持服务',
+                dl_tag: '立即下载',
+                dl_title: '立即开始体验',
+                dl_desc: '选择你的平台，体验 Nexus WinTool 的强大功能。',
+                dl_btn: '下载',
+                ch_official: '官方网站：serein.ren',
+                ch_github: 'GitHub 仓库',
+                ch_announce: '最新发布',
+                notice_title: '重要提示',
+                notice1_title: '官网访问：',
+                notice1_desc: 'serein.ren 支持用户注册与登录，不同地区可能存在连接差异。',
+                notice2_title: '国际版：',
+                notice2_desc: '国际版网站正在开发中，尚未正式上线，敬请期待！',
+                notice3_title: '最新动态：',
+                notice3_desc: '关注 GitHub 仓库获取版本更新和发布公告。',
+                notice4_title: '网络问题：',
+                notice4_desc: '如遇访问缓慢或断联，请稍后重试或通过 GitHub 获取最新版本。',
+                footer_desc: '全能型系统优化与硬件检测工具。融合全球顶尖工具的强大功能，打造一站式解决方案。',
+                footer_product: '产品',
+                fp_features: '功能特性',
+                fp_platforms: '平台支持',
+                fp_download: '下载中心',
+                fp_changelog: '更新日志',
+                footer_resources: '资源',
+                fr_docs: '使用文档',
+                fr_faq: '常见问题',
+                fr_community: '开发者社区',
+                fr_feedback: '反馈建议',
+                footer_about: '关于',
+                fa_about: '关于我们',
+                fa_privacy: '隐私政策',
+                fa_terms: '用户协议',
+                fa_contact: '联系我们',
+                modal_title: '选择版本',
+                modal_subtitle: '选择最适合你的版本',
+                modal_std: '普通版',
+                modal_std_desc: '日常使用的基础工具——永久免费',
+                modal_pro: '专业版',
+                modal_pro_desc: '8000+ 功能，面向高级用户和 IT 专业人士',
+                modal_cus: '定制版',
+                modal_cus_desc: '50000+ 定制模块，满足企业级需求',
+                modal_free: '免费',
+                modal_footer: '你将被跳转到 '
+            }
+        };
+
+        let currentLang = 'en';
+
+        function switchLang(lang) {
+            currentLang = lang;
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        }
+
+        // ========== 粒子背景（金色） ==========
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 150) {
+                    const force = (150 - distance) / 150;
+                    this.x -= dx * force * 0.015;
+                    this.y -= dy * force * 0.015;
+                }
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.floor((canvas.width * canvas.height) / 20000);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        initParticles();
+        window.addEventListener('resize', initParticles);
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${0.1 * (1 - distance / 100)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            drawConnections();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // ========== 导航栏滚动效果 ==========
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ========== 平滑滚动 ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ========== 滚动显示动画 ==========
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+
+        // ========== 数字计数动画 ==========
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number:not(#users-count)');
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const suffix = counter.getAttribute('data-suffix') || '';
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString() + suffix;
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString() + suffix;
+                    }
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            updateCounter();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(counter);
+            });
+        }
+
+        animateCounters();
+
+        // ========== 用户信赖数字（自动增长 + 点赞） ==========
+        let usersCount = 50000;
+        let hasStartedAutoGrowth = false;
+
+        function formatNumber(num) {
+            return Math.floor(num).toLocaleString() + '+';
+        }
+
+        function startAutoGrowth() {
+            if (hasStartedAutoGrowth) return;
+            hasStartedAutoGrowth = true;
+
+            const usersEl = document.getElementById('users-count');
+
+            let current = 0;
+            const target = usersCount;
+            const duration = 2000;
+            const step = target / (duration / 16);
+
+            const initAnim = () => {
+                current += step;
+                if (current < target) {
+                    usersEl.textContent = formatNumber(current);
+                    requestAnimationFrame(initAnim);
+                } else {
+                    usersEl.textContent = formatNumber(target);
+                    setInterval(() => {
+                        const increment = Math.floor(Math.random() * 3) + 1;
+                        usersCount += increment;
+                        usersEl.textContent = formatNumber(usersCount);
+                    }, 2000);
+                }
+            };
+
+            initAnim();
+        }
+
+        const usersObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startAutoGrowth();
+                    usersObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        usersObserver.observe(document.getElementById('users-count'));
+
+        // 点赞功能
+        let hasLiked = false;
+
+        function addLike() {
+            if (hasLiked) return;
+            hasLiked = true;
+
+            const btn = document.getElementById('like-btn');
+            const usersEl = document.getElementById('users-count');
+
+            btn.classList.add('like-pop');
+            btn.classList.add('liked');
+            setTimeout(() => btn.classList.remove('like-pop'), 300);
+
+            usersCount += 1;
+            usersEl.textContent = formatNumber(usersCount);
+        }
+
+        // ========== 版本 Tab 切换 ==========
+        const tabs = document.querySelectorAll('.edition-tab');
+        const contents = document.querySelectorAll('.edition-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+
+                revealOnScroll();
+            });
+        });
+
+        // ========== 下载弹窗 ==========
+        let currentPlatform = '';
+
+        function openDownloadModal(platform) {
+            currentPlatform = platform;
+            document.getElementById('download-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('download-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function goToGitHub(edition) {
+            window.open('https://github.com/SereinCin/serein-Nexus-WinTool', '_blank');
+            closeDownloadModal();
+        }
+
+        document.getElementById('download-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'download-modal') {
+                closeDownloadModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDownloadModal();
+            }
+        });
+
+        // ========== Hero 区域鼠标光晕 ==========
+        const hero = document.querySelector('.hero');
+        hero.addEventListener('mousemove', (e) => {
+            const rect = hero.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            hero.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(212, 175, 55, 0.03) 0%, transparent 50%)`;
+        });
+    </script>
+</body>
+</html>
